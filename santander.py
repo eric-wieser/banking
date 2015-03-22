@@ -12,6 +12,7 @@ class SantanderAccount(Account):
 	def __init__(self, sort_code, account_no):
 		super().__init__(sort_code, account_no)
 		self.auth(None, None, None, {})
+		self.driver = None
 
 	def auth(self, user, password, reg_num, secrets):
 		self.user = user
@@ -19,8 +20,8 @@ class SantanderAccount(Account):
 		self.reg_num = reg_num
 		self.secrets = secrets
 
-	def get_qif_statement(self, from_date, to_date):
-		driver = webdriver.PhantomJS()
+	def login(self, driver_cls=webdriver.PhantomJS):
+		self.driver = driver = driver_cls()
 
 		driver.get('https://retail.santander.co.uk/LOGSUK_NS_ENS/BtoChannelDriver.ssobto?dse_operationName=LOGON&dse_processorState=initial&redirect=S')
 
@@ -66,6 +67,10 @@ class SantanderAccount(Account):
 		# choose our account
 		acc = account_map[self.id]
 		acc.find_element_by_css_selector('a').click()
+
+
+	def get_qif_statement(self, from_date, to_date):
+		driver = self.driver
 
 		driver.find_element_by_css_selector('.download').click()
 
@@ -118,5 +123,7 @@ class SantanderAccount(Account):
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		)
+
+		driver.find_element_by_css_selector('[name="downloadStatementsForm.events.1"]').click()
 
 		return r.content

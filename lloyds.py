@@ -13,6 +13,7 @@ class LloydsAccount(Account):
 	def __init__(self, sort_code, account_no):
 		super().__init__(sort_code, account_no)
 		self.auth(None, None, None, {})
+		self.driver = None
 
 	def auth(self, user, password, mem_info, secrets):
 		self.user = user
@@ -20,9 +21,9 @@ class LloydsAccount(Account):
 		self.mem_info = mem_info
 		self.secrets = secrets
 
-	def get_qif_statement(self, from_date, to_date):
-		driver = webdriver.PhantomJS()
-		self.driver = driver
+
+	def login(self, driver_cls=webdriver.PhantomJS):
+		self.driver = driver = driver_cls()
 
 		driver.get('https://online.lloydsbank.co.uk/personal/logon/login.jsp')
 
@@ -78,6 +79,10 @@ class LloydsAccount(Account):
 			))
 		acc.find_element_by_css_selector('a').click()
 
+
+	def get_qif_statement(self, from_date, to_date):
+		driver = self.driver
+
 		# open download form
 		link = driver.find_element_by_id('pnlgrpStatement:conS1:lkoverlay')
 		download_url = urllib.parse.urljoin(driver.current_url, link.get_attribute('href'))
@@ -129,5 +134,8 @@ class LloydsAccount(Account):
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		)
+
+		# return to index
+		driver.find_element_by_id('frmTest:lnkCancel1').click()
 
 		return r.content
