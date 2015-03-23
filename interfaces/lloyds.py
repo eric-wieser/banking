@@ -1,5 +1,6 @@
 import re
 import urllib.parse
+from datetime import timedelta
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -12,14 +13,13 @@ from common import BankAccount
 class LloydsAccount(BankAccount):
 	def __init__(self, name, sort_code, account_no):
 		super().__init__(name, sort_code, account_no)
-		self.auth(None, None, None, {})
+		self.auth(None, None, None)
 		self.driver = None
 
-	def auth(self, user, password, mem_info, secrets):
+	def auth(self, user, password, mem_info):
 		self.user = user
 		self.password = password
 		self.mem_info = mem_info
-		self.secrets = secrets
 
 
 	def login(self, driver_cls=webdriver.PhantomJS):
@@ -94,6 +94,22 @@ class LloydsAccount(BankAccount):
 			driver.find_element_by_id('frmTest:strExportFormatSelected')
 		).select_by_visible_text('Quicken 98 and 2000 and Money (.QIF)')
 
+		# yield statements in 3-month intervals
+		while from_date < to_date:
+			next_date = from_date + timedelta(days=84)
+			if next_date > to_date:
+				next_date = to_date
+
+			yield from_date, next_date, self._get_single_statement(from_date, next_date)
+
+			from_date = next_date
+
+		# return to index
+		driver.find_element_by_id('frmTest:lnkCancel1').click()
+
+
+	def _get_single_statement(self, from_date, to_date):
+		driver = self.driver
 
 		from_day = driver.find_element_by_id('frmTest:dtSearchFromDate')
 		from_month = driver.find_element_by_id('frmTest:dtSearchFromDate.month')
@@ -135,7 +151,4 @@ class LloydsAccount(BankAccount):
 			}
 		)
 
-		# return to index
-		driver.find_element_by_id('frmTest:lnkCancel1').click()
-
-		return [(from_date, to_date, r.content)]
+		return r.content

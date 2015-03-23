@@ -11,14 +11,13 @@ from common import BankAccount
 class SantanderAccount(BankAccount):
 	def __init__(self, name, sort_code, account_no):
 		super().__init__(name, sort_code, account_no)
-		self.auth(None, None, None, {})
+		self.auth(None, None, None)
 		self.driver = None
 
-	def auth(self, user, password, reg_num, secrets):
+	def auth(self, user, password, reg_num):
 		self.user = user
 		self.password = password
 		self.reg_num = reg_num
-		self.secrets = secrets
 
 	def login(self, driver_cls=webdriver.PhantomJS):
 		self.driver = driver = driver_cls()
@@ -30,12 +29,11 @@ class SantanderAccount(BankAccount):
 		elem.send_keys(self.user)
 		elem.send_keys(Keys.RETURN)
 
-
 		try:
 			challenge = driver.find_element_by_css_selector('[id="cbQuestionChallenge.responseUser"]')
 			question = driver.find_element_by_css_selector('form .form-item .data').text.strip()
-			print("Verifying new computer: {}".format(question))
-			challenge.send_keys(self.secrets.get(question) or input("Answer not known: "))
+			answer = input("Verifying new computer: {}".format(question))
+			challenge.send_keys(answer)
 			challenge.send_keys(Keys.RETURN)
 		except NoSuchElementException as e:
 			print("Verification not needed?")
