@@ -11,12 +11,13 @@ Usage
 Currently has interfaces to Tesco credit cards, Santander accounts, and lloyds account(s). Patches adding interfaces welcome.
 
 Modify `config.py` to something like:
-
-    accounts = [
-        SantanderAccount('santander saver', '12-23-34', '12345678'),
-        LloydsAccount('lloyds gold', '98-76-54', '11223344'),
-        TescoAccount('tesco')
-    ]
+```python
+accounts = [
+    SantanderAccount('santander saver', '12-23-34', '12345678'),
+    LloydsAccount('lloyds gold', '98-76-54', '11223344'),
+    TescoAccount('tesco')
+]
+```
 
 Then download `.qif` statements with
 
@@ -42,3 +43,5 @@ Next time you run, it'll be faster:
 To debug with firefox, use
 
     get.py tesco --ff
+
+Statement dates are currently [a little hardcoded](https://github.com/eric-wieser/banking/blob/0c3466fe9c610440ee9da3fad473b632cf3373fd/get.py#L35-L36)
