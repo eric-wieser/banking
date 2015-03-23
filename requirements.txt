@@ -1,0 +1,4 @@
+docopt==0.6.2
+keyring==5.3
+pycrypto==2.6.1
+selenium==2.45.0
