@@ -7,11 +7,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import Select
 import requests
 
-from common import Account
+from common import BankAccount
 
-class LloydsAccount(Account):
-	def __init__(self, sort_code, account_no):
-		super().__init__(sort_code, account_no)
+class LloydsAccount(BankAccount):
+	def __init__(self, name, sort_code, account_no):
+		super().__init__(name, sort_code, account_no)
 		self.auth(None, None, None, {})
 		self.driver = None
 
@@ -80,7 +80,7 @@ class LloydsAccount(Account):
 		acc.find_element_by_css_selector('a').click()
 
 
-	def get_qif_statement(self, from_date, to_date):
+	def get_qif_statements(self, from_date, to_date):
 		driver = self.driver
 
 		# open download form
@@ -138,4 +138,4 @@ class LloydsAccount(Account):
 		# return to index
 		driver.find_element_by_id('frmTest:lnkCancel1').click()
 
-		return r.content
+		return [(from_date, to_date, r.content)]
