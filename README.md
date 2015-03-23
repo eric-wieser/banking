@@ -8,4 +8,37 @@ You'll need to patch PyCrypto [like this](https://github.com/dlitz/pycrypto/comm
 Usage
 -----
 
-Currently has interfaces to Tesco credit cards, Santander accounts, and lloyds account(s). Patches adding interfaces welcome
+Currently has interfaces to Tesco credit cards, Santander accounts, and lloyds account(s). Patches adding interfaces welcome.
+
+Modify `config.py` to something like:
+
+    accounts = [
+        SantanderAccount('santander saver', '12-23-34', '12345678'),
+        LloydsAccount('lloyds gold', '98-76-54', '11223344'),
+        TescoAccount('tesco')
+    ]
+
+Then download `.qif` statements with
+
+    $ get.py llo san
+    Please set a password for your new keyring:
+    Please confirm the password:
+    Missing credentials for account 'lloyds gold'
+      Enter user:
+      Enter password:
+      Enter mem_info:
+    Missing credentials for account 'santander saver'
+      Enter user:
+      Enter password:
+      Enter reg_num:
+    [random print statements while downloading follow]
+
+Next time you run, it'll be faster:
+
+    $ get.py llo san
+    Please enter password for encrypted keyring:
+    [random print statements while downloading follow]
+
+To debug with firefox, use
+
+    get.py tesco --ff
