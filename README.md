@@ -21,27 +21,41 @@ accounts = [
 
 Then download `.qif` statements with
 
-    $ get.py llo san
-    Please set a password for your new keyring:
-    Please confirm the password:
-    Missing credentials for account 'lloyds gold'
-      Enter user:
-      Enter password:
-      Enter mem_info:
-    Missing credentials for account 'santander saver'
-      Enter user:
-      Enter password:
-      Enter reg_num:
-    [random print statements while downloading follow]
+```console
+$ get.py llo san
+Please set a password for your new keyring:
+Please confirm the password:
+Missing credentials for account 'lloyds gold'
+  Enter user:
+  Enter password:
+  Enter mem_info:
+Missing credentials for account 'santander saver'
+  Enter user:
+  Enter password:
+  Enter reg_num:
+[random print statements while downloading follow]
+$ ls -1 downloads
+lloyds gold 2014-09-06 2014-11-29.qif
+lloyds gold 2014-11-29 2015-02-21.qif
+lloyds gold 2015-02-21 2015-03-05.qif
+santander saver 2014-09-06 2015-03-05.qif
+```
+
+Note how sometime multiple statements are produced, due to the restrictions on timespan enforced by the bank
+
 
 Next time you run, it'll be faster:
 
-    $ get.py llo san
-    Please enter password for encrypted keyring:
-    [random print statements while downloading follow]
+```console
+$ get.py llo san
+Please enter password for encrypted keyring:
+[random print statements while downloading follow]
+`
 
 To debug with firefox, use
 
-    get.py tesco --ff
+```console
+$ get.py tesco --ff
+```
 
 Statement dates are currently [a little hardcoded](https://github.com/eric-wieser/banking/blob/0c3466fe9c610440ee9da3fad473b632cf3373fd/get.py#L35-L36)
