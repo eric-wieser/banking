@@ -111,29 +111,28 @@ class LloydsAccount(BankAccount):
 	def _get_single_statement(self, from_date, to_date):
 		driver = self.driver
 
-		from_day = driver.find_element_by_id('frmTest:dtSearchFromDate')
-		from_month = driver.find_element_by_id('frmTest:dtSearchFromDate.month')
-		from_year = driver.find_element_by_id('frmTest:dtSearchFromDate.year')
-
-		Select(from_day).select_by_value('{:%d}'.format(from_date))
-		Select(from_month).select_by_value('{:%m}'.format(from_date))
-		Select(from_year).select_by_value('{:%Y}'.format(from_date))
-
-		to_day = driver.find_element_by_id('frmTest:dtSearchToDate')
-		to_month = driver.find_element_by_id('frmTest:dtSearchToDate.month')
-		to_year = driver.find_element_by_id('frmTest:dtSearchToDate.year')
-
-		Select(to_day).select_by_value('{:%d}'.format(to_date))
-		Select(to_month).select_by_value('{:%m}'.format(to_date))
-		Select(to_year).select_by_value('{:%Y}'.format(to_date))
-
 		params, target_url, user_agent = driver.execute_script("""
 			return (function() {
-				var data = $('form').serializeArray();
-				data.push({ name: 'frmTest:btn_Export', value: '' });
-				return [$.param(data), $('form').attr('action'), navigator.userAgent];
+				var form = document.forms[0];
+				var es = [].map.call($(form).serializeArray(), function(e) {
+					return [e.name, e.value];
+				});
+				return [es, form.getAttribute('action'), navigator.userAgent];
 			})();
 		""")
+		params = dict(params)
+
+		params.update({
+			'frmTest:dtSearchToDate':       '{:%d}'.format(to_date),
+			'frmTest:dtSearchToDate.month': '{:%m}'.format(to_date),
+			'frmTest:dtSearchToDate.year':  '{:%Y}'.format(to_date),
+			'frmTest:dtSearchFromDate':       '{:%d}'.format(from_date),
+			'frmTest:dtSearchFromDate.month': '{:%m}'.format(from_date),
+			'frmTest:dtSearchFromDate.year':  '{:%Y}'.format(from_date),
+
+			'frmTest:btn_Export': ''
+		})
+
 
 		cookies = {
 			c['name']: c['value']
@@ -146,9 +145,38 @@ class LloydsAccount(BankAccount):
 			cookies=cookies,
 			headers = {
 				'User-Agent': user_agent,
-				'Referer': driver.current_url,
-				'Content-Type': 'application/x-www-form-urlencoded'
+				'Referer': driver.current_url
 			}
 		)
 
 		return r.content
+
+
+	def _get_single_statement_new(self, from_date, to_date):
+		driver = self.driver
+
+		params, target_url, user_agent = driver.execute_script("""
+			return (function() {
+				var form = document.forms[0];
+				var es = [].map.call($(form).serializeArray(), function(e) {
+					return [e.name, e.value];
+				});
+				return [es, form.getAttribute('action'), navigator.userAgent];
+			})();
+		""")
+
+		params = dict(params)
+		from pprint import pprint as print
+		params.update({
+			'frmTest:btn_Export': '',
+
+			'frmTest:dtSearchToDate':       '{:%Y}'.format(to_date),
+			'frmTest:dtSearchToDate.month': '{:%m}'.format(to_date),
+			'frmTest:dtSearchToDate.year':  '{:%d}'.format(to_date),
+			'frmTest:dtSearchFromDate':       '{:%Y}'.format(from_date),
+			'frmTest:dtSearchFromDate.month': '{:%m}'.format(from_date),
+			'frmTest:dtSearchFromDate.year':  '{:%d}'.format(from_date)
+		})
+		print(params)
+
+		cookies = { c['name']: c['value'] for c in driver.get_cookies()	}
