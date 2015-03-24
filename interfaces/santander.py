@@ -1,4 +1,5 @@
 import urllib.parse
+from datetime import timedelta
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -69,6 +70,9 @@ class SantanderAccount(BankAccount):
 
 	def get_qif_statements(self, from_date, to_date):
 		driver = self.driver
+
+		# upper bound is inclusive for santander
+		to_date = to_date - timedelta(days=1)
 
 		driver.find_element_by_css_selector('.download').click()
 
