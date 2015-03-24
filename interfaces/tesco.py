@@ -141,11 +141,10 @@ class TescoAccount(Account):
 		# simulate submitting the form
 		params, target_url, user_agent = driver.execute_script("""
 			return (function() {
-				var form = document.forms.DownLoadTransactionForm
+				var form = document.forms.DownLoadTransactionForm;
 				var es = [].map.call(form.elements, function(e) {
-						return [e.name, e.value];
-					}
-				);
+					return [e.name, e.value];
+				});
 				return [es, form.getAttribute('action'), navigator.userAgent];
 			})();
 		""")
