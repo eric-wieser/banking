@@ -32,14 +32,15 @@ if opts['--ff']:
 else:
 	driver_cls = webdriver.PhantomJS
 
-from_date = datetime(2014, 9, 6)
-to_date = datetime(2015, 3, 5)
+from_date = datetime(2014, 7, 8)
+to_date = datetime(2015, 3, 25)
 
 
 for b in opts['<banks>']:
 	acc = find_account(b)
-	print("Getting statements for {}".format(acc.name))
+	print("Logging in to {}".format(acc.name))
 	acc.login(driver_cls)
+	print("Getting statements for {}".format(acc.name))
 	for f, t, qif in acc.get_qif_statements(from_date, to_date):
 		with open('downloads/{} {:%Y-%m-%d} {:%Y-%m-%d}.qif'.format(acc.name, f, t), 'wb') as f:
 			f.write(qif)
