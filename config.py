@@ -5,6 +5,9 @@ from interfaces import *
 cred_store = keyring.backends.file.EncryptedKeyring()
 cred_store.file_path = 'cred.cfg'
 
+# force a credential check
+cred_store.keyring_key
+
 accounts = [
 	TescoAccount('tesco')
 ]
