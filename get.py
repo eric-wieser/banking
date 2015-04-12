@@ -1,6 +1,6 @@
 """
 Usage:
-	get.py [--ff] <banks>...
+	get.py [--ff] <from> <to> <banks>...
 
 """
 import sys
@@ -10,16 +10,19 @@ from datetime import datetime
 
 from docopt import docopt
 from selenium import webdriver
+from dateutil.parser import parse as parse_date
 
-from config import accounts
+import config
 
 def find_account(q):
-	matches = [a for a in accounts if re.match(q, a.name)]
+	from config import accounts
+
+	matches = [a for a in config.accounts if re.match(q, a.name)]
 	if len(matches) == 1:
 		return matches[0]
 	elif matches:
 		raise ValueError("Multiple matches for {}: {}".format(
-			q, ', '.join(a.name for a in accounts)
+			q, ', '.join(m.name for m in matches)
 		))
 	else:
 		raise ValueError("No matches for {}".format(q))
@@ -32,15 +35,35 @@ if opts['--ff']:
 else:
 	driver_cls = webdriver.PhantomJS
 
-from_date = datetime(2014, 7, 8)
-to_date = datetime(2015, 3, 25)
+from_date = parse_date(opts['<from>']).date()
+to_date = parse_date(opts['<to>']).date()
+
+accounts = [find_account(b) for b in opts['<banks>']]
+
+print("""
+Downloading transactions
+	after {} (inclusive)
+	until {} (exclusive)
+	from {}
+""".format(
+	from_date,
+	to_date,
+	', '.join('{!r}'.format(acc.name) for acc in accounts)
+))
+
+# force a credential check
+config.cred_store.keyring_key
+for a in accounts:
+	a.auth_from_store(config.cred_store)
 
 
-for b in opts['<banks>']:
-	acc = find_account(b)
+
+qif_fix = lambda qif: re.sub(rb'(?m)(^D.*/)20(\d\d\r?)$', rb'\1\2', qif)
+
+for acc in accounts:
 	print("Logging in to {}".format(acc.name))
 	acc.login(driver_cls)
 	print("Getting statements for {}".format(acc.name))
 	for f, t, qif in acc.get_qif_statements(from_date, to_date):
 		with open('downloads/{} {:%Y-%m-%d} {:%Y-%m-%d}.qif'.format(acc.name, f, t), 'wb') as f:
-			f.write(qif)
+			f.write(qif_fix(qif))

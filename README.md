@@ -22,7 +22,13 @@ accounts = [
 Then download `.qif` statements with
 
 ```console
-$ get.py llo san
+$ get.py "Feb 6" "Mar 6" llo san
+
+Downloading transactions
+        after 2015-03-06 (inclusive)
+        until 2015-04-07 (exclusive)
+        from 'lloyds gold', 'santander saver'
+
 Please set a password for your new keyring:
 Please confirm the password:
 Missing credentials for account 'lloyds gold'
@@ -47,7 +53,13 @@ Note how sometime multiple statements are produced, due to the restrictions on t
 Next time you run, it'll be faster:
 
 ```console
-$ get.py llo san
+$ get.py "Mar 6" "Apr 7" llo san
+
+Downloading transactions
+        after 2015-03-06 (inclusive)
+        until 2015-04-07 (exclusive)
+        from 'lloyds gold', 'santander saver'
+
 Please enter password for encrypted keyring:
 [random print statements while downloading follow]
 `
@@ -55,7 +67,5 @@ Please enter password for encrypted keyring:
 To debug with firefox, use
 
 ```console
-$ get.py tesco --ff
+$ get.py "Mar 6" "Apr 7" tesco --ff
 ```
-
-Statement dates are currently [a little hardcoded](https://github.com/eric-wieser/banking/blob/0c3466fe9c610440ee9da3fad473b632cf3373fd/get.py#L35-L36)
