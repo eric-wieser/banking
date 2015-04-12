@@ -33,7 +33,7 @@ class SantanderAccount(BankAccount):
 		try:
 			challenge = driver.find_element_by_css_selector('[id="cbQuestionChallenge.responseUser"]')
 			question = driver.find_element_by_css_selector('form .form-item .data').text.strip()
-			answer = input("Verifying new computer: {}".format(question))
+			answer = input("Verifying new computer:\n\t{}? ".format(question))
 			challenge.send_keys(answer)
 			challenge.send_keys(Keys.RETURN)
 		except NoSuchElementException as e:
@@ -72,7 +72,7 @@ class SantanderAccount(BankAccount):
 		driver = self.driver
 
 		# upper bound is inclusive for santander
-		to_date = to_date - timedelta(days=1)
+		to_date_incl = to_date - timedelta(days=1)
 
 		driver.find_element_by_css_selector('.download').click()
 
@@ -96,11 +96,11 @@ class SantanderAccount(BankAccount):
 		to_year = driver.find_element_by_css_selector('[name="downloadStatementsForm.toDate.year"]')
 
 		to_day.clear()
-		to_day.send_keys(str(to_date.day))
+		to_day.send_keys(str(to_date_incl.day))
 		to_month.clear()
-		to_month.send_keys(str(to_date.month))
+		to_month.send_keys(str(to_date_incl.month))
 		to_year.clear()
-		to_year.send_keys(str(to_date.year))
+		to_year.send_keys(str(to_date_incl.year))
 
 		params, target_url, user_agent = driver.execute_script("""
 			return (function() {
