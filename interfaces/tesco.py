@@ -54,21 +54,21 @@ class TescoAccount(Account):
 
 		driver.find_element_by_id('NEXTBUTTON').click()
 
-		try:
+		if driver.find_element_by_id('login-send-ota'):
+			button = driver.find_element_by_css_selector('[data-value="SENDMOBILE"]')
+			assert button
+			button.click()
+
 			WebDriverWait(driver, 1).until(lambda d: 'One time' in d.title)
-		except TimeoutException:
-			pass
-		else:
-			send_e = driver.find_element_by_id('SEND-OTA')
-			number =  driver.find_element_by_id('MOBILE_NR_DISPLAY').get_attribute('value')
-			send_e.click()
-			code = input("OTP sent to {}: ".format(number))
+
+			code = input("OTP sent to mobile: ")
 
 			driver.find_element_by_id('OTP').send_keys(code)
 			driver.find_element_by_id('NEXTBUTTON').click()
 
 			driver.find_element_by_id('PASSWORD').send_keys(self.password)
-			driver.find_element_by_id('DOWNLOADAID_Y').click()
+			driver.find_element_by_css_selector('#DOWNLOADAID_Y + *').click()
+
 			driver.find_element_by_id('NEXTBUTTON').click()
 
 		driver.implicitly_wait(5)
