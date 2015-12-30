@@ -122,10 +122,12 @@ class LloydsAccount(BankAccount):
 		""")
 		params = dict(params)
 
+		to_date_incl = to_date - timedelta(days=1)
+
 		params.update({
-			'frmTest:dtSearchToDate':       '{:%d}'.format(to_date),
-			'frmTest:dtSearchToDate.month': '{:%m}'.format(to_date),
-			'frmTest:dtSearchToDate.year':  '{:%Y}'.format(to_date),
+			'frmTest:dtSearchToDate':       '{:%d}'.format(to_date_incl),
+			'frmTest:dtSearchToDate.month': '{:%m}'.format(to_date_incl),
+			'frmTest:dtSearchToDate.year':  '{:%Y}'.format(to_date_incl),
 			'frmTest:dtSearchFromDate':       '{:%d}'.format(from_date),
 			'frmTest:dtSearchFromDate.month': '{:%m}'.format(from_date),
 			'frmTest:dtSearchFromDate.year':  '{:%Y}'.format(from_date),

@@ -35,8 +35,8 @@ if opts['--ff']:
 else:
 	driver_cls = webdriver.PhantomJS
 
-from_date = parse_date(opts['<from>']).date()
-to_date = parse_date(opts['<to>']).date()
+from_date = parse_date(opts['<from>'])
+to_date = parse_date(opts['<to>'])
 
 accounts = [find_account(b) for b in opts['<banks>']]
 
