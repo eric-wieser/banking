@@ -1,3 +1,4 @@
+#! python3
 """
 Usage:
 	get.py [--ff] <from> <to> <banks>...
