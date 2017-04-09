@@ -55,20 +55,16 @@ class LloydsAccount(BankAccount):
 		# choose account
 		driver.implicitly_wait(3)
 		accounts = (driver
-			.find_element_by_css_selector('#lstAccLst')
-			.find_elements_by_css_selector('.accountDetails')
+			.find_element_by_css_selector('#des-m-sat-xx-1')
+			.find_elements_by_css_selector('.des-m-sat-xx-account-information')
 		)
 
 		account_map = {}
 		for acc in accounts:
-			num_e = acc.find_element_by_css_selector('.numbers')
-			if num_e.text:
-				sc, an = [
-					x.strip()
-					for x in acc.find_element_by_css_selector('.numbers').text.split(',')
-				]
-
-				account_map[sc, an] = acc
+			dds = acc.find_elements_by_css_selector('dd')
+			sc = dds[1].text.strip()
+			an = dds[2].text.strip()
+			account_map[sc, an] = acc
 
 		# choose our account
 		try:
@@ -77,7 +73,7 @@ class LloydsAccount(BankAccount):
 			raise ValueError("Could not find account {} {}: accounts found were {}".format(
 				self.sort_code, self.account_no, account_map.keys()
 			))
-		acc.find_element_by_css_selector('a').click()
+		acc.find_element_by_css_selector('a.ViewOnlineStatementsAnchor1').click()
 
 
 	def get_qif_statements(self, from_date, to_date):
