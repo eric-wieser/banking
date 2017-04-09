@@ -1,5 +1,6 @@
 docopt==0.6.2
-keyring==5.3
+keyring==10.2
+keyrings.alt=2.0
 pycrypto==2.6.1
 selenium==2.45.0
 python-dateutil==2.4.2
