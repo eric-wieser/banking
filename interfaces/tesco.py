@@ -63,7 +63,7 @@ class TescoAccount(Account):
 
 			code = input("OTP sent to mobile: ")
 
-			driver.find_element_by_id('OTP').send_keys(code)
+			driver.find_element_by_id('OTA').send_keys(code)
 			driver.find_element_by_id('NEXTBUTTON').click()
 
 			driver.find_element_by_id('PASSWORD').send_keys(self.password)
