@@ -50,7 +50,11 @@ class LloydsAccount(BankAccount):
 
 
 		if 'Interstitial' in driver.title:
-			driver.find_element_by_id('continueLnk1').click()
+			btn = driver.find_elements_by_css_selector('.primaryBtn')
+			assert len(btn) == 1
+			btn = btn[0]
+			# assert 'continue' in btn.text.lower(), btn.text
+			btn.click()
 
 		# choose account
 		driver.implicitly_wait(3)
@@ -80,14 +84,16 @@ class LloydsAccount(BankAccount):
 		driver = self.driver
 
 		# open download form
-		link = driver.find_element_by_id('pnlgrpStatement:conS1:lkoverlay')
-		download_url = urllib.parse.urljoin(driver.current_url, link.get_attribute('href'))
+		try:
+			link = driver.find_element_by_id('pnlgrpStatement:conS1:lkoverlay')
+			download_url = urllib.parse.urljoin(driver.current_url, link.get_attribute('href'))
+		except:
+			download_url = 'https://secure.lloydsbank.co.uk/personal/a/viewproductdetails/ress/m44_exportstatement_fallback.jsp'
 		driver.get(download_url)
 
 		# set options
-		driver.find_element_by_id('frmTest:rdoDateRange:1').click()
 		Select(
-			driver.find_element_by_id('frmTest:strExportFormatSelected')
+			driver.find_element_by_id('export-format')
 		).select_by_visible_text('Quicken 98 and 2000 and Money (.QIF)')
 
 		# yield statements in 3-month intervals
@@ -101,8 +107,7 @@ class LloydsAccount(BankAccount):
 			from_date = next_date
 
 		# return to index
-		driver.find_element_by_id('frmTest:lnkCancel1').click()
-
+		driver.find_element_by_css_selector('.non-js-back-button').click()
 
 	def _get_single_statement(self, from_date, to_date):
 		driver = self.driver
@@ -121,14 +126,11 @@ class LloydsAccount(BankAccount):
 		to_date_incl = to_date - timedelta(days=1)
 
 		params.update({
-			'frmTest:dtSearchToDate':       '{:%d}'.format(to_date_incl),
-			'frmTest:dtSearchToDate.month': '{:%m}'.format(to_date_incl),
-			'frmTest:dtSearchToDate.year':  '{:%Y}'.format(to_date_incl),
-			'frmTest:dtSearchFromDate':       '{:%d}'.format(from_date),
-			'frmTest:dtSearchFromDate.month': '{:%m}'.format(from_date),
-			'frmTest:dtSearchFromDate.year':  '{:%Y}'.format(from_date),
+			'searchDateTo':    '{:%d/%m/%Y}'.format(to_date_incl),
+			'searchDateFrom':  '{:%d/%m/%Y}'.format(from_date),
+			'exportDateRange': 'between',
 
-			'frmTest:btn_Export': ''
+			'export-statement-form:btnQuickTransferRetail': 'Export'
 		})
 
 
