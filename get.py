@@ -66,5 +66,6 @@ for acc in accounts:
 	acc.login(driver_cls)
 	print("Getting statements for {}".format(acc.name))
 	for f, t, qif in acc.get_qif_statements(from_date, to_date):
+		print('  Downloaded {} to {}'.format(f, t))
 		with open('downloads/{} {:%Y-%m-%d} {:%Y-%m-%d}.qif'.format(acc.name, f, t), 'wb') as f:
 			f.write(qif_fix(qif))
