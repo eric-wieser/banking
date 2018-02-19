@@ -4,7 +4,9 @@ from datetime import timedelta
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 
 from common import BankAccount
@@ -74,7 +76,10 @@ class SantanderAccount(BankAccount):
 		# upper bound is inclusive for santander
 		to_date_incl = to_date - timedelta(days=1)
 
-		driver.find_element_by_css_selector('.download').click()
+		download_link = WebDriverWait(driver, 10).until(
+	        EC.presence_of_element_located((By.CSS_SELECTOR, ".download"))
+	    )
+		download_link.click()
 
 		Select(driver.find_element_by_css_selector('#sel_downloadto')).select_by_visible_text('Intuit Quicken (QIF)')
 

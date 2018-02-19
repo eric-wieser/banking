@@ -36,7 +36,11 @@ class LloydsAccount(BankAccount):
 		pass_e.send_keys(Keys.RETURN)
 
 		# secret word
-		char_es = driver.find_elements_by_css_selector('#frmentermemorableinformation1 .formField div.clearfix')
+		driver.implicitly_wait(5)
+		field_wrapper = driver.find_element_by_css_selector('#frmentermemorableinformation1')
+		char_es = field_wrapper.find_elements_by_css_selector('.formField div.clearfix')
+		if len(char_es) != 3:
+			raise ValueError("Only got {}".format(char_es))
 		for char_e in char_es:
 			label_e = char_e.find_element_by_css_selector('label')
 			select_e = char_e.find_element_by_css_selector('select')
